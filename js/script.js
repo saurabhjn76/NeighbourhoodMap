@@ -4,7 +4,7 @@ var map;
 var markers = [];
  var bounds;
 
-function initMap() {
+initMap =function() {
     // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 28.6127, lng: 77.2773},
@@ -42,8 +42,9 @@ function initMap() {
             populateInfoWindow(this, largeInfowindow);
         });
     }
-    document.getElementById('show-listings').addEventListener('click', showListings);
-    document.getElementById('hide-listings').addEventListener('click', hideListings);
+   // document.getElementById('show-listings').addEventListener('click', showListings);
+   // document.getElementById('hide-listings').addEventListener('click', hideListings);
+    showListings();
 }
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
@@ -64,16 +65,18 @@ function populateInfoWindow(marker, infowindow) {
 var showPlaceInfo = function (place) {
     //console.log(placeIndex);
     hideListings();
-    place.set(map);
-    bounds.extend(place.position);
-    google.maps.event.trigger(place, 'click');
-    markers[place.id].setMap(map);
+    markers[place.id].set(map);
+   // bounds.extend(markers[place.id].position);
+    google.maps.event.trigger(markers[place.id], 'click');
+    //map.fitBounds(bounds);
+    //markers[place.id].setMap(map);
     markers[place.id].setAnimation(google.maps.Animation.BOUNCE);
+
 
     setTimeout(function () {  // // Disable animation after 1.2s time
         markers[place.id].setAnimation(null);
     }, 1200);
-    map.setZoom(17);
+   // map.setZoom(15);
    // map.fitBounds(bounds);
 };
 
@@ -83,14 +86,25 @@ function PlacesViewModel() {
      self.placeFilter = ko.observable('');
      self.placeList = markers;
 
+
      self.filterPlaces = ko.computed(function () {
+         if(map!==undefined){
+             map.panTo({lat: 28.6127, lng: 77.2773});
+         }
          if(self.placeFilter() === ''){
+             console.log(self.placeList);
              return self.placeList;
          } else {
              // Refrence: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-             return self.placeList.slice().filter(function (place) {
+             var filteredList = self.placeList.slice().filter(function (place) {
                  return place.title.toLowerCase().indexOf(self.placeFilter().toLowerCase()) > -1;
              });
+             hideListings();
+             for (var i = 0; i < filteredList.length; i++) {
+                 markers[filteredList[i].id].setMap(map);
+             }
+             return filteredList;
+
          }
      });
      self.placeClicked= function (place) {
@@ -114,5 +128,8 @@ function hideListings() {
         markers[i].setMap(null);
     }
 }
+
 // apply KO bindings
-ko.applyBindings(new PlacesViewModel());
+    ko.applyBindings(new PlacesViewModel());
+
+
