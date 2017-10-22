@@ -58,7 +58,16 @@ function populateInfoWindow(marker, infowindow) {
     }
 }
 
- function PlacesViewModel() {
+var showPlaceInfo = function (placeIndex) {
+    //console.log(placeIndex);
+    hideListings();
+    placeIndex.set(map);
+    var bound = new google.maps.LatLngBounds();
+    bound.extend(placeIndex.position);
+    map.fitBounds(bound);
+};
+
+function PlacesViewModel() {
     //Ref-https://stackoverflow.com/questions/21523745/knockoutjs-computed-is-not-a-function
     var self=this;
      self.placeFilter = ko.observable('');
@@ -68,13 +77,15 @@ function populateInfoWindow(marker, infowindow) {
          if(self.placeFilter() === ''){
              return self.placeList;
          } else {
-             var list = self.placeList.slice();
              // Refrence: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-             return list.filter(function (place) {
+             return self.placeList.slice().filter(function (place) {
                  return place.title.toLowerCase().indexOf(self.placeFilter().toLowerCase()) > -1;
              });
          }
      });
+     self.placeClicked= function (placeIndex) {
+            showPlaceInfo(placeIndex);
+     }
 
  }
 // This function will loop through the markers array and display them all.

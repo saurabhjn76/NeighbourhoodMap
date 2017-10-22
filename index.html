@@ -19,7 +19,7 @@
         </div>
         <div>
             <ul data-bind="foreach: filterPlaces()">
-                <li data-bind="text: title"></li>
+                <li data-bind="text: title,click: $parent.placeClicked"></li>
             </ul>
         </div>
     </div>
