@@ -39,3 +39,8 @@ h1 {
     text-align: left;
     width: 340px;
 }
+.filter-place {
+    width: 80%;
+    padding: 8px;
+    line-height: 32px;
+}

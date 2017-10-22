@@ -1,3 +1,4 @@
+//Ref:https://github.com/udacity/ud864/blob/master/Project_Code_4_WindowShoppingPart2.html
 var map;
 // Create a new blank array for all the listing markers.
 var markers = [];
@@ -56,6 +57,26 @@ function populateInfoWindow(marker, infowindow) {
         });
     }
 }
+
+ function PlacesViewModel() {
+    //Ref-https://stackoverflow.com/questions/21523745/knockoutjs-computed-is-not-a-function
+    var self=this;
+     self.placeFilter = ko.observable('');
+     self.placeList = markers;
+
+     self.filterPlaces = ko.computed(function () {
+         if(self.placeFilter() === ''){
+             return self.placeList;
+         } else {
+             var list = self.placeList.slice();
+             // Refrence: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+             return list.filter(function (place) {
+                 return place.title.toLowerCase().indexOf(self.placeFilter().toLowerCase()) > -1;
+             });
+         }
+     });
+
+ }
 // This function will loop through the markers array and display them all.
 function showListings() {
     var bounds = new google.maps.LatLngBounds();
@@ -72,3 +93,5 @@ function hideListings() {
         markers[i].setMap(null);
     }
 }
+// apply KO bindings
+ko.applyBindings(new PlacesViewModel());
