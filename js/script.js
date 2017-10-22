@@ -2,6 +2,8 @@
 var map;
 // Create a new blank array for all the listing markers.
 var markers = [];
+ var bounds;
+
 function initMap() {
     // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
@@ -9,6 +11,7 @@ function initMap() {
         zoom: 13,
         mapTypeControl: false
     });
+    bounds = new google.maps.LatLngBounds();
     // These are the real estate listings that will be shown to the user.
     // Normally we'd have these in a database instead.
     var locations = [
@@ -58,13 +61,20 @@ function populateInfoWindow(marker, infowindow) {
     }
 }
 
-var showPlaceInfo = function (placeIndex) {
+var showPlaceInfo = function (place) {
     //console.log(placeIndex);
     hideListings();
-    placeIndex.set(map);
-    var bound = new google.maps.LatLngBounds();
-    bound.extend(placeIndex.position);
-    map.fitBounds(bound);
+    place.set(map);
+    bounds.extend(place.position);
+    google.maps.event.trigger(place, 'click');
+    markers[place.id].setMap(map);
+    markers[place.id].setAnimation(google.maps.Animation.BOUNCE);
+
+    setTimeout(function () {  // // Disable animation after 1.2s time
+        markers[place.id].setAnimation(null);
+    }, 1200);
+    map.setZoom(17);
+   // map.fitBounds(bounds);
 };
 
 function PlacesViewModel() {
@@ -83,14 +93,14 @@ function PlacesViewModel() {
              });
          }
      });
-     self.placeClicked= function (placeIndex) {
-            showPlaceInfo(placeIndex);
+     self.placeClicked= function (place) {
+            showPlaceInfo(place)
      }
 
  }
 // This function will loop through the markers array and display them all.
 function showListings() {
-    var bounds = new google.maps.LatLngBounds();
+
     // Extend the boundaries of the map for each marker and display the marker
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
