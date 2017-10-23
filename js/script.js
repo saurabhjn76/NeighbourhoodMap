@@ -106,7 +106,7 @@ function loadInfo(marker, infowindow) {
 
 var showPlaceInfo = function (place) {
     //console.log(placeIndex);
-    hideListings();
+   // hideListings();
     markers[place.id].set(map);
    // bounds.extend(markers[place.id].position);
     google.maps.event.trigger(markers[place.id], 'click');
@@ -171,6 +171,9 @@ function hideListings() {
         markers[i].setMap(null);
     }
 }
+mapLoadError = function() {
+    alert('Google maps failed to load. Try reloading the page or Connect to internet');
+};
 
 // apply KO bindings
     ko.applyBindings(new PlacesViewModel());
