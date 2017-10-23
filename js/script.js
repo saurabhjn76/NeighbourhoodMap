@@ -41,6 +41,9 @@ initMap =function() {
         marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
         });
+        loadInfo(marker, largeInfowindow);
+
+
     }
    // document.getElementById('show-listings').addEventListener('click', showListings);
    // document.getElementById('hide-listings').addEventListener('click', hideListings);
@@ -60,6 +63,18 @@ function populateInfoWindow(marker, infowindow) {
             infowindow.marker = null;
         });
     }
+}
+
+// get info from foursquare API //https://developer.foursquare.com/docs/api/
+function loadInfo(marker, infowindow) {
+    var url = 'https://api.foursquare.com/v2/venues/search?v=20161016';
+    var client_id  = '&client_id='+ '25GZBIJ5JLK3GIWE3X01YUWVLDB32EGGDVX3IYGOFRNSFRS3';
+    var client_secret = '&client_secret='+ 'VGE0QY5XFAS5JZUDNUZ3SISKBCHFQFUBADKZ44XVL05OOJY1';
+    url += client_id + client_secret + '&ll=' + marker.getPosition().lat();
+    url += ',' + marker.getPosition().lng() + '&query=' + marker.title;
+
+    console.log(url);
+
 }
 
 var showPlaceInfo = function (place) {
