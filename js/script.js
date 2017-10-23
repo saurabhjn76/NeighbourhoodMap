@@ -41,7 +41,7 @@ initMap =function() {
         marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
         });
-        loadInfo(marker, largeInfowindow);
+
 
 
     }
@@ -53,6 +53,7 @@ initMap =function() {
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
+    loadInfo(marker, infowindow);
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != marker) {
         infowindow.marker = marker;
@@ -62,6 +63,12 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.addListener('closeclick', function() {
             infowindow.marker = null;
         });
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+
+
+        setTimeout(function () {  // // Disable animation after 1.2s time
+            marker.setAnimation(null);
+        }, 1200);
     }
 }
 
@@ -74,6 +81,26 @@ function loadInfo(marker, infowindow) {
     url += ',' + marker.getPosition().lng() + '&query=' + marker.title;
 
     console.log(url);
+    https://api.jquery.com/jquery.get/
+    $.getJSON(url, function (recieved) {
+        console.log(recieved);
+        if(recieved !=null){
+            infowindow.setContent("");
+            var content = '';
+            var firstVenue = recieved.response.venues[0];
+            var name = firstVenue['name'];
+            var category = firstVenue.categories[0].name;
+            var address = firstVenue.location.address;
+            content ='<h3>' + name + '</h3>';
+            content+= '<b>Category:</b> ' + category + '<br>';
+            content+= '<b>Address:</b> ' + address;
+            infowindow.setContent(content);
+        } else {
+            infowindow.setContent("No venue found!!");
+        }
+    }).fail(function () {
+        infowindow.setContent("oops!! Details could not be loaded");
+    });
 
 }
 
@@ -84,13 +111,14 @@ var showPlaceInfo = function (place) {
    // bounds.extend(markers[place.id].position);
     google.maps.event.trigger(markers[place.id], 'click');
     //map.fitBounds(bounds);
-    //markers[place.id].setMap(map);
     markers[place.id].setAnimation(google.maps.Animation.BOUNCE);
+
 
 
     setTimeout(function () {  // // Disable animation after 1.2s time
         markers[place.id].setAnimation(null);
     }, 1200);
+    markers[place.id].setMap(map);
    // map.setZoom(15);
    // map.fitBounds(bounds);
 };
