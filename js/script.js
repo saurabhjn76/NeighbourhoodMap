@@ -21,9 +21,16 @@ initMap = function () {
         mapTypeControl: false
     });
     bounds = new google.maps.LatLngBounds();
+
     // These are the real estate listings that will be shown to the user.
-    var largeInfowindow = new google.maps.InfoWindow();
+    var largeInfoWindow = new google.maps.InfoWindow();
     // The following group uses the location array to create an array of markers on initialize.
+
+    var markerClick = function ($this) {
+        $this = this;
+        populateInfoWindow($this, largeInfoWindow);
+    };
+
     for (var i = 0; i < locations.length; i++) {
         // Get the position from the location array.
         var position = locations[i].location;
@@ -38,12 +45,11 @@ initMap = function () {
         // Push the marker to our array of markers.
         markers.push(marker);
         // Create an onclick event to open an infowindow at each marker.
-        marker.addListener('click', function () {
-            populateInfoWindow(this, largeInfowindow);
-        });
-
+        marker.addListener('click',markerClick);
 
     }
+
+
     // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
@@ -76,14 +82,14 @@ initMap = function () {
         url += ',' + marker.getPosition().lng() + '&query=' + marker.title;
 
         console.log(url);
-        https://api.jquery.com/jquery.get/
+      //  https://api.jquery.com/jquery.get/
             $.getJSON(url, function (recieved) {
                 console.log(recieved);
-                if (recieved != null) {
+                if (recieved !== null) {
                     infowindow.setContent("");
                     var content = '';
                     var firstVenue = recieved.response.venues[0];
-                    var name = firstVenue['name'];
+                    var name = firstVenue.name;
                     var category = firstVenue.categories[0].name;
                     var address = firstVenue.location.address;
                     content = '<h3>' + name + '</h3>';
@@ -103,9 +109,9 @@ initMap = function () {
         //console.log(placeIndex);
         // hideListings();
         markers[place.id].set(map);
-        // bounds.extend(markers[place.id].position);
+        bounds.extend(markers[place.id].position);
         google.maps.event.trigger(markers[place.id], 'click');
-        //map.fitBounds(bounds);
+        map.fitBounds(bounds);
         markers[place.id].setAnimation(google.maps.Animation.BOUNCE);
 
 
@@ -131,7 +137,7 @@ initMap = function () {
             }
             if (self.placeFilter() === '') {
                 console.log(self.placeList);
-                if(markers.length!=0){
+                if(markers.length!==0){
                     showListings();
                 }
                 return self.placeList;
@@ -149,8 +155,8 @@ initMap = function () {
             }
         });
         self.placeClicked = function (place) {
-            showPlaceInfo(place)
-        }
+            showPlaceInfo(place);
+        };
 
     }
 
@@ -178,7 +184,7 @@ initMap = function () {
 
     // apply KO bindings
     ko.applyBindings(new PlacesViewModel());
-}
+};
 
 mapLoadError = function () {
     alert('Google maps failed to load. Try reloading the page or Connect to internet');
